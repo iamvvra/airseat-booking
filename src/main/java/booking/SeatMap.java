@@ -1,6 +1,7 @@
 package booking;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -21,12 +22,13 @@ public class SeatMap {
     private int aisleSeatsCount;
     private int middleSeatsCount;
     private int seatNoCounter;
+    private int columnCount;
 
     public SeatMap() {
         seats = new LinkedHashMap<>();
     }
 
-    private int maxRowCount() {
+    public int maxRowCount() {
         return seats.values().stream().max(Comparator.comparingInt(List::size)).map(l -> l.size()).orElse(0);
     }
 
@@ -43,10 +45,15 @@ public class SeatMap {
                 } else {
                     middleSeatsCount += 1;
                 }
+                columnCount += 1;
                 row.add(seat);
             }
             seats.put(i, row);
         }
+    }
+
+    public int getColumnCount() {
+        return columnCount;
     }
 
     private boolean isWindow(int i, int seatCol, boolean middle, int columnIndex, int seatsPerRow) {
@@ -176,17 +183,20 @@ public class SeatMap {
         Iterator<Entry<Integer, List<Seat>>> iterator = seats.entrySet().iterator();
         while (iterator.hasNext()) {
             List<Seat> seats = iterator.next().getValue();
-            SeatType prevType = null;
-            System.out.println("+" + new String(new char[37]).replace("\0", "-") + "+");
-
-            for (Seat seat : seats) {
-                if (prevType != null && prevType.equals(seat.getType())) {
-                    System.out.format("|%3s", "");
+            int prevCol = -1;
+            System.out.println("+" + new String(new char[71]).replace("\0", "-") + "+");
+            for (int i = 0; i < seats.size(); i++) {
+                Seat seat = seats.get(i);
+                if (prevCol == -1) {
+                    System.out.format("%1s", "|");
                 }
-                System.out.format("|%3s", ((seat.isBooked() ? seat.getSeatNo() : "X")));
-                prevType = seat.getType();
+                if (prevCol != -1 && prevCol != seat.getColumn()) {
+                    System.out.format("%7s", "|");
+                }
+                System.out.format("%7s", ((seat.isBooked() ? seat.getSeatNo() : "X")));
+                prevCol = seat.getColumn();
             }
-            System.out.format("|%3s","\n");
+            System.out.format("|%7s", "\n");
         }
     }
 }

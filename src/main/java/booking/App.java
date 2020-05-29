@@ -1,6 +1,6 @@
 package booking;
 
-import java.util.List;
+import booking.BookingRules.SeatType;
 
 /**
  * Hello world!
@@ -8,12 +8,17 @@ import java.util.List;
  */
 public class App {
     public static void main(String[] args) {
-        int[][] seatConfig = { { 2, 2 }, { 3, 2 }, { 3, 4 }, { 3, 5 } };
-        arrangeSeat(seatConfig);
-    }
+        BookingRules rules = new BookingRules();
+        rules.bookAscending();
+        rules.addBookingOrder(SeatType.AISLE);
+        rules.addBookingOrder(SeatType.WINDOW);
+        rules.addBookingOrder(SeatType.MIDDLE);
+        SeatMap seatMap = SeatMapConfigurer.newConfiguration().newSeatColumn(3, 2, false).newSeatColumn(4, 3, true)
+                .newSeatColumn(2, 3, true).newSeatColumn(3, 4, false).build();
+        BookingManager bookingManager = new BookingManager(seatMap, rules);
+        bookingManager.book(18);
 
-    private static List<Seat> arrangeSeat(int[][] seatConfig) {
-        System.out.println(seatConfig.length);
-        return null;
+        seatMap.printState();
+
     }
 }
